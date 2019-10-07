@@ -1,9 +1,11 @@
 #include <iostream>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <fstream>
 
 using namespace std;
+
+fstream fout;
 
 struct Data {
     char type[3];
@@ -168,15 +170,15 @@ class game {
         void check_alive(void); // if there are blocks on the top 4 rows of the table, set alive = 0
         bool still_alive(void) {return alive;}
         void show_table(void) {
-            cout << "   ";
+            fout << "   ";
             for (int i = 0; i < cols; i++)
-                cout<< i + 1 << ' ';
-            cout << endl;
+                fout<< i + 1 << ' ';
+            fout << endl;
             for (int i = 4; i < rows; i++) {
-                cout <<'#' << (i >= 10? i - 10: i)<< ' ';
+                fout <<'#' << (i >= 10? i - 10: i)<< ' ';
                 for (int j = 0; j < cols; j++)
-                    cout << table[i][j] << ' ';
-                cout << endl;
+                    fout << table[i][j] << ' ';
+                fout << endl;
             }
         }
 };
@@ -186,16 +188,6 @@ void game:: newblock(Data d) {
     int i;
 
     d.set_Data();
-
-    /* check if the data set by the setData() is correct-----yes
-    cout << d.block_height <<' '<<d.block_weidth<<endl;
-    for (int j = 0; j < 4; j++) {
-        for (int k = 0; k < 4; k++)
-            cout << d.block[j][k];
-        cout <<endl;
-    }
-    */
-
     // i meas which rows the block have arrive
     for (i = 0; i <= rows - d.block_height && stuck == 0; i++) {
         // check each squares occupied by the blockS
@@ -210,10 +202,7 @@ void game:: newblock(Data d) {
         i -= 2;
     else if (i == rows - d.block_height + 1) 
         i--;
-    if (stuck == 1)
-        cout << endl << "stuck\n";
-    cout <<"i is "<< i <<endl;
-    //draw the block d on the table
+
     draw_table(d, i); 
     //clear the row that is full
     clear_horizontal();
@@ -251,32 +240,26 @@ int main(void) {
     int m, n;
     int i = 0, j = 0, k = 1;
     struct Data data[1001]; 
-    /*FILE *infile;
-    FILE *outfile;
+    fstream fin;
 
-    infile = fopen("tetris", "r");
-    if (infile == NULL)
-        throw "the file is empty\n";
-    fscanf(infile, "%d%d", &m, &n);
-    */
-    cin >> m >> n;
-
+    fin.open("tetris.data", ios::in);
+    fout.open("tetris.final", ios::out);
+    fin >> m >> n;
     while (1) {
-        //fscanf(infile, "%s", data[j].type);
-        cin >> data[j].type;
+        fin >> data[j].type;
         if((strcmp(data[j].type, "End") == 0))
             break;
-        //fscanf(infile, "%s", data[j].type);
-        cin >> data[j].column;
+        fin >> data[j].column;
         j++;
     }
+    fin.close();
 
     game tetris(m, n); 
+
     while (tetris.still_alive() && i < j) { // j means the total number of data 
         tetris.newblock(data[i++]);
-        cout << i<<endl;
-        tetris.show_table();
     }
-    
+    tetris.show_table();
+    fout.close();
     return 0;    
 }
