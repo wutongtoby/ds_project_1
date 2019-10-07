@@ -93,6 +93,32 @@ struct Data {
             block[0][0] = 1, block[0][1] = 1, block[0][2] = 1;
             block[1][2] = 1;
         }
+        else if (strcmp(type, "S1") == 0) {
+            block_height = 2;
+            block_weidth = 3;
+            block[0][1] = 1, block[0][2] = 1;
+            block[1][0] = 1, block[1][1] = 1;
+        }
+        else if (strcmp(type, "S2") == 0) {
+            block_height = 3;
+            block_weidth = 2;
+            block[0][0] = 1;
+            block[0][1] = 1, block[1][1] = 1;
+            block[2][1] = 1;
+        }
+        else if (strcmp(type, "Z1") == 0) {
+            block_height = 2;
+            block_weidth = 3;
+            block[0][0] = 1, block[0][1] = 1;
+            block[1][1] = 1,block[1][2] = 1;
+        }
+        else if (strcmp(type, "Z2") == 0) {
+            block_height = 3;
+            block_weidth = 2;
+            block[0][1] = 1;
+            block[1][0] = 1, block[1][1] = 1;
+            block[2][0] = 1;
+        }
         else if (strcmp(type, "I1") == 0) {
             block_height = 4;
             block_weidth = 1;
