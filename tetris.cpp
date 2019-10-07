@@ -148,9 +148,9 @@ class game {
         bool** table;
         bool alive; // alive or dead
     public:
-        // the constructor, the rows are give 5 units longer
+        // the constructor, the rows are give 4 units longer
         game(int m, int n) : rows(m + 4), cols(n), alive(1) {
-            bool* temp = new bool[(rows) * cols];
+            bool* temp = new bool[rows * cols];
             table = new bool*[rows];
             for(int i = 0; i < rows; i++) {
                 table[i] = temp + cols * i;
@@ -160,18 +160,15 @@ class game {
         }
         ~game(void) {
             delete [] table[0];
-            delete table;
+            delete [] table;
         }
-        void newdata(Data); // to throw new data into the game
+        void newblock(Data); // to throw new block into the game
         void clear_horizontal(void); // to clear horizontal line on the table    
         void draw_table(Data, int); // draw some block on the table
-        
-        void check_alive(void); // if the top of the table has block, set alive = 0
-        bool still_alive(void) {
-            return alive;
-        }
+        void check_alive(void); // if there are blocks on the top 4 rows of the table, set alive = 0
+        bool still_alive(void) {return alive;}
         void show_table(void) {
-            cout<<"   ";
+            cout << "   ";
             for (int i = 0; i < cols; i++)
                 cout<< i + 1 << ' ';
             cout << endl;
@@ -184,12 +181,10 @@ class game {
         }
 };
 
-void game:: newdata(Data d) { 
-    // let block fall step by step, checking if it is stucked
-    // if stucked,call draw_table() , then call clear_horizontal(), then call check_alive()
+void game:: newblock(Data d) { 
     bool stuck = 0;
     int i;
-    
+
     d.set_Data();
 
     /* check if the data set by the setData() is correct-----yes
@@ -202,8 +197,8 @@ void game:: newdata(Data d) {
     */
 
     // i meas which rows the block have arrive
-    for (i = 1; i <= rows - d.block_height && stuck == 0; i++) {
-        // check each square occupied by the blockS
+    for (i = 0; i <= rows - d.block_height && stuck == 0; i++) {
+        // check each squares occupied by the blockS
         for (int j = 0; j < d.block_height; j++) {
             for (int k = 0; k < d.block_weidth; k++) {
                 if (d.block[j][k] == 1 && table[i + j][d.column - 1 + k] == 1) 
@@ -212,30 +207,24 @@ void game:: newdata(Data d) {
         }
     }
     
-    if (i == rows - d.block_height + 1) // stuck at some place
+    if (i == rows - d.block_height + 1) 
         i--;
     else if (stuck == 1)
         i -= 2;
-    //cout << i;
-    //cout<<"check1\n";
-    draw_table(d, i); //draw the block d on the diagram
-    //cout << "check2\n";
+
+    //draw the block d on the table
+    draw_table(d, i); 
+    //clear the row that is full
     clear_horizontal();
-    //cout<<"check3\n";
+    //check if it is still alive
     check_alive();
-    cout <<"###" <<still_alive()<<"###" <<endl;
 }
 
 void game:: draw_table(Data d, int row) {
-// i means which rows can the block fall
-    //cout << row;
-    for (int i = 0; i < d.block_height; i++) {
-        for (int j = 0; j < d.block_weidth; j++) {
+    for (int i = 0; i < d.block_height; i++)
+        for (int j = 0; j < d.block_weidth; j++)
             if (d.block[i][j] == 1)
                 table[row + i][d.column - 1 + j] = 1;
-            //cout << i <<' ';
-        }
-    }
 }
 
 void game:: check_alive(void) {
@@ -282,8 +271,8 @@ int main(void) {
     }
 
     game tetris(m, n); 
-    while (tetris.still_alive() && i < 50) { // j means the total number of data 
-        tetris.newdata(data[i++]);
+    while (tetris.still_alive() && i < j) { // j means the total number of data 
+        tetris.newblock(data[i++]);
         cout << i<<endl;
         tetris.show_table();
     }
