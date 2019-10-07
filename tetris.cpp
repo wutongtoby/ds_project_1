@@ -38,7 +38,7 @@ struct Data {
             block_height = 3;
             block_weidth = 2;
             block[0][0] = 1;
-            block[0][1] = 1, block[1][1] = 1;
+            block[1][0] = 1, block[1][1] = 1;
             block[2][0] = 1;
         }
         else if (strcmp(type, "L1") == 0) {
@@ -103,7 +103,7 @@ struct Data {
             block_height = 3;
             block_weidth = 2;
             block[0][0] = 1;
-            block[0][1] = 1, block[1][1] = 1;
+            block[1][0] = 1, block[1][1] = 1;
             block[2][1] = 1;
         }
         else if (strcmp(type, "Z1") == 0) {
@@ -171,10 +171,14 @@ class game {
             return alive;
         }
         void show_table(void) {
+            cout<<"   ";
+            for (int i = 0; i < cols; i++)
+                cout<< i + 1 << ' ';
+            cout << endl;
             for (int i = 4; i < rows; i++) {
                 cout <<'#' << (i >= 10? i - 10: i)<< ' ';
                 for (int j = 0; j < cols; j++)
-                    cout << table[i][j];
+                    cout << table[i][j] << ' ';
                 cout << endl;
             }
         }
@@ -219,6 +223,7 @@ void game:: newdata(Data d) {
     clear_horizontal();
     //cout<<"check3\n";
     check_alive();
+    cout <<"###" <<still_alive()<<"###" <<endl;
 }
 
 void game:: draw_table(Data d, int row) {
@@ -241,16 +246,15 @@ void game:: check_alive(void) {
 }
 
 void game:: clear_horizontal(void) {
-    int i, j, k;
-    for (k = 0; k < rows; k++) {
-        for (j = 0; j < cols && table[rows - 1 - k][j] == 1; j++);
-        
-        if (j == cols) { //means some row is full
-            for (i = rows - 2 - k; i > 4; i--)
-                for (j = 0; j < cols; j++)
-                    table[i + 1][j] = table[i][j];
+    int i, j, k, l;
+    for (i = rows - 1; i > 3; i--) {
+        for (j = 0; j < cols && table[i][j] == 1; j++);
+        if (j == cols) { 
+            for (k = i; k > 0; k--)
+                for (l = 0; l < cols; l++)
+                table[k][l] = table[k - 1][l];
+            i++;
         }
-        //cout << k <<' ';
     }
 }
 int main(void) {
@@ -276,11 +280,13 @@ int main(void) {
         cin >> data[j].column;
         j++;
     }
+
     game tetris(m, n); 
-    while (tetris.still_alive() && i < j) { // j means the total number of data 
+    while (tetris.still_alive() && i < 50) { // j means the total number of data 
         tetris.newdata(data[i++]);
         cout << i<<endl;
         tetris.show_table();
     }
+    
     return 0;    
 }
