@@ -206,12 +206,13 @@ void game:: newblock(Data d) {
             }
         }
     }
-    
-    if (i == rows - d.block_height + 1) 
-        i--;
-    else if (stuck == 1)
+    if (stuck == 1)
         i -= 2;
-
+    else if (i == rows - d.block_height + 1) 
+        i--;
+    if (stuck == 1)
+        cout << endl << "stuck\n";
+    cout <<"i is "<< i <<endl;
     //draw the block d on the table
     draw_table(d, i); 
     //clear the row that is full
