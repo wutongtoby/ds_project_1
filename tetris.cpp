@@ -1,7 +1,7 @@
 #include <iostream>
-#include <stdlib.h>
 #include <string.h>
 #include <fstream>
+#include <time.h>
 
 using namespace std;
 
@@ -15,8 +15,9 @@ struct Data {
     int block_height;
 
     void set_Data(void) {
-        for (int i = 0; i < 16; i++)
-            block[0][i] = 0;
+        for (int i = 0; i < 4; i++)
+            for(int j = 0 ; j < 4; j++)
+                block[i][j] = 0;
         if (strcmp(type, "T1") == 0) {
             block_height = 2;
             block_weidth = 3;
@@ -144,6 +145,7 @@ struct Data {
             throw "the type of block dosen't exist\n";
     }
 };
+
 class game {
     private:
         int rows, cols;
@@ -167,21 +169,32 @@ class game {
         void newblock(Data); // to throw new block into the game
         void clear_horizontal(void); // to clear horizontal line on the table    
         void draw_table(Data, int); // draw some block on the table
+        void show_table(void);
         void check_alive(void); // if there are blocks on the top 4 rows of the table, set alive = 0
         bool still_alive(void) {return alive;}
-        void show_table(void) {
-            fout << "   ";
-            for (int i = 0; i < cols; i++)
-                fout<< i + 1 << ' ';
-            fout << endl;
-            for (int i = 4; i < rows; i++) {
-                fout <<'#' << (i >= 10? i - 10: i)<< ' ';
-                for (int j = 0; j < cols; j++)
-                    fout << table[i][j] << ' ';
-                fout << endl;
-            }
-        }
+        
 };
+
+void game:: show_table(void) {
+    cout << "   ";
+    fout << "   ";
+    for (int i = 0; i < cols; i++) {
+        fout << i + 1 << ' ';
+        cout << i + 1 << ' '; 
+    }
+    fout << endl;
+    cout << endl;
+    for (int i = 4; i < rows; i++) {
+        fout << '#' << (i >= 10? i - 10: i) << ' ';
+        cout << '#' << (i >= 10? i - 10: i) << ' ';
+        for (int j = 0; j < cols; j++) {
+            fout << table[i][j] << ' ';
+            cout << table[i][j] << ' ';
+        }
+        fout << endl;
+        cout << endl;
+    }
+}
 
 void game:: newblock(Data d) { 
     bool stuck = 0;
@@ -190,7 +203,7 @@ void game:: newblock(Data d) {
     d.set_Data();
     // i meas which rows the block have arrive
     for (i = 0; i <= rows - d.block_height && stuck == 0; i++) {
-        // check each squares occupied by the blockS
+        // check each squares occupied by the blocks
         for (int j = 0; j < d.block_height; j++) {
             for (int k = 0; k < d.block_weidth; k++) {
                 if (d.block[j][k] == 1 && table[i + j][d.column - 1 + k] == 1) 
@@ -202,7 +215,6 @@ void game:: newblock(Data d) {
         i -= 2;
     else if (i == rows - d.block_height + 1) 
         i--;
-
     draw_table(d, i); 
     //clear the row that is full
     clear_horizontal();
@@ -238,20 +250,29 @@ void game:: clear_horizontal(void) {
 }
 int main(void) {
     int m, n;
-    int i = 0, j = 0, k = 1;
-    struct Data data[1001]; 
+    int i = 0, j = 0;
+    struct Data data[1001]; // 100 block + end
     fstream fin;
+    clock_t start_t, end_t;
 
-    fin.open("tetris.data", ios::in);
+    start_t = clock();
+    fin.open("other.data", ios::in);
     fout.open("tetris.final", ios::out);
     fin >> m >> n;
-    while (1) {
+    
+    while (j != 1001) {
         fin >> data[j].type;
         if((strcmp(data[j].type, "End") == 0))
             break;
         fin >> data[j].column;
         j++;
     }
+    
+    if (j == 1001) {
+        cout << "too many blocks!!!" << endl;
+        return 1;
+    }
+
     fin.close();
 
     game tetris(m, n); 
@@ -261,5 +282,9 @@ int main(void) {
     }
     tetris.show_table();
     fout.close();
+    end_t = clock();
+    cout << "total run time of the program is " << (end_t - start_t) / CLOCKS_PER_SEC;
+    cout << endl;
+    cout << j <<endl;
     return 0;    
 }
