@@ -250,41 +250,35 @@ void game:: clear_horizontal(void) {
 }
 int main(void) {
     int m, n;
-    int i = 0, j = 0;
-    struct Data data[1001]; // 100 block + end
+    struct Data data; // 100 block + end
     fstream fin;
     clock_t start_t, end_t;
-
+    
     start_t = clock();
-    fin.open("other.data", ios::in);
+    
+    fin.open("3.data", ios::in);
     fout.open("tetris.final", ios::out);
+    
     fin >> m >> n;
     
-    while (j != 1001) {
-        fin >> data[j].type;
-        if((strcmp(data[j].type, "End") == 0))
+    game tetris(m, n);
+    while (tetris.still_alive()) {
+        fin >> data.type;
+        if((strcmp(data.type, "End") == 0))
             break;
-        fin >> data[j].column;
-        j++;
+        fin >> data.column;
+        tetris.newblock(data);
     }
     
-    if (j == 1001) {
-        cout << "too many blocks!!!" << endl;
-        return 1;
-    }
+    
 
     fin.close();
 
-    game tetris(m, n); 
-
-    while (tetris.still_alive() && i < j) { // j means the total number of data 
-        tetris.newblock(data[i++]);
-    }
     tetris.show_table();
     fout.close();
     end_t = clock();
+    
     cout << "total run time of the program is " << (end_t - start_t) / CLOCKS_PER_SEC;
     cout << endl;
-    cout << j <<endl;
     return 0;    
 }
