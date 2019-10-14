@@ -240,8 +240,8 @@ int main(void) {
     struct Data data; // 100 block + end
     fstream fin;
     
-    fin.open("tetris.data", ios::in);
-    fout.open("tetris.final", ios::out);
+    fin.open("Tetris.data", ios::in);
+    fout.open("Tetris.final", ios::out);
     
     fin >> m >> n;
     
